@@ -1,4 +1,4 @@
-const CACHE = 'mos-2026-10-03-neucha-handwritten-notebook-v1';
+const CACHE = 'mos-2026-10-03-neucha-handwritten-notebook-v2-greek-symbols';
 const APP_SHELL = [
   './',
   './index.html',

@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- BUILD: 2026-10-03-lr3-triangle-render-rebuild-v4 -->
+<!-- BUILD: 2026-10-03-lr2-lr4-greek-symbol-font-fix-v7 -->
 <html lang="ru">
 <head>
 <meta charset="utf-8">
@@ -143,6 +143,19 @@ th{background:var(--soft);font-weight:800}
 .lab.active svg text {
   font-family:'Times New Roman', Times, serif !important;
   font-style:normal !important;
+}
+/* φ и λ — всегда стандартный математический шрифт, независимо от шрифта документа. */
+.math-greek{
+  font-family:'Times New Roman', Times, serif !important;
+  font-style:normal !important;
+  font-weight:400 !important;
+  letter-spacing:0 !important;
+}
+.lab.active svg .math-greek,
+.pdf-export svg .math-greek{
+  font-family:'Times New Roman', Times, serif !important;
+  font-style:normal !important;
+  font-weight:400 !important;
 }
 .pdf-export,
 .pdf-export h1,
@@ -477,6 +490,54 @@ function setStatus(id, txt, bad=false){
 function line(t){ return `<div class="calc-line">${t}</div>`; }
 function card(title, body){ return `<div class="card"><h2>${title}</h2>${body}</div>`; }
 
+/*
+ * Единое отображение греческих символов φ/λ во всех лабораторных.
+ * Основной текст документа остаётся рукописным, но сами математические
+ * символы всегда набираются стандартным шрифтом. Для SVG используем tspan,
+ * чтобы браузер не наследовал рукописный шрифт от внешнего текста.
+ */
+function normalizeGreekSymbols(root){
+  if(!root) return;
+  const greek=/[φϕΦλΛ]/g;
+  const isSkip = el => el && el.closest && el.closest('script,style');
+  const walker=document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+  const nodes=[];
+  let node;
+  while((node=walker.nextNode())){
+    if(isSkip(node.parentElement)) continue;
+    if(!greek.test(node.nodeValue || '')) { greek.lastIndex=0; continue; }
+    greek.lastIndex=0;
+    nodes.push(node);
+  }
+
+  nodes.forEach(textNode=>{
+    const text=textNode.nodeValue || '';
+    const parent=textNode.parentNode;
+    if(!parent || (parent.nodeType===1 && parent.classList.contains('math-greek'))) return;
+    const isSvg=parent.namespaceURI==='http://www.w3.org/2000/svg';
+    const frag=document.createDocumentFragment();
+    let last=0;
+    text.replace(greek,(ch,offset)=>{
+      if(offset>last) frag.appendChild(document.createTextNode(text.slice(last,offset)));
+      if(isSvg){
+        const t=document.createElementNS('http://www.w3.org/2000/svg','tspan');
+        t.setAttribute('class','math-greek');
+        t.textContent=ch;
+        frag.appendChild(t);
+      }else{
+        const span=document.createElement('span');
+        span.className='math-greek';
+        span.textContent=ch;
+        frag.appendChild(span);
+      }
+      last=offset+ch.length;
+      return ch;
+    });
+    if(last<text.length) frag.appendChild(document.createTextNode(text.slice(last)));
+    parent.replaceChild(frag,textNode);
+  });
+}
+
 function dm(v, minuteDecimals=1){
   const neg = v < 0;
   const a = Math.abs(v);
@@ -600,6 +661,7 @@ function renderLR2(){
       + card("Подробное решение", detail)
       + card("График проверки средней широты и разности широт", lr2Graph)
       + card("Итоговые значения", summary);
+    normalizeGreekSymbols($("#lr2out"));
   } catch(e) {
     setStatus("#lr2status", e.message, true);
     $("#lr2out").innerHTML = "";
@@ -912,6 +974,7 @@ function renderLR3(){
       <div class="section-title">Итог</div>
       <table><tr><th>Элемент</th><th>В градусах</th><th>Градусы и минуты</th></tr>${final}</table>`;
     $("#lr3out").innerHTML=card("Решение",body);
+    normalizeGreekSymbols($("#lr3out"));
   } catch(e){ setStatus("#lr3status",e.message,true); $("#lr3out").innerHTML=""; }
 }
 
@@ -1824,6 +1887,7 @@ function renderLR4(){
       </div>`;
     const body = lr4DetailedHtml(o) + summary;
     $("#lr4out").innerHTML = card("Исходные данные", inp) + card("Подробное решение по образцу", body);
+    normalizeGreekSymbols($("#lr4out"));
   } catch(e) {
     setStatus("#lr4status", e.message, true);
     $("#lr4out").innerHTML = "";
@@ -1918,6 +1982,7 @@ async function sharePDF(){
     });
   }
 
+  normalizeGreekSymbols(clone);
   host.appendChild(clone);
   document.body.appendChild(host);
 
