@@ -808,8 +808,8 @@ function lr3StepDiagramSvg(step, stepNo, o){
     let textFill='#000';
 
     if(isTarget){
-      shape=`<rect x="${p.x-21}" y="${p.y-21}" width="42" height="42" rx="1.5" fill="#111" stroke="#111" stroke-width="2.2"/>`;
-      textFill='#fff';
+      shape=`<rect x="${p.x-21}" y="${p.y-21}" width="42" height="42" rx="1.5" fill="#e6e6e6" stroke="#111" stroke-width="2.2"/>`;
+      textFill='#000';
     } else if(isGiven){
       shape=`<circle cx="${p.x}" cy="${p.y}" r="21" fill="#e6e6e6" stroke="#111" stroke-width="2.2"/>`;
       textFill='#000';
@@ -840,7 +840,7 @@ function lr3StepDiagramSvg(step, stepNo, o){
     // Legend uses the same visual language as the actual markers.
     `<circle cx="95" cy="327" r="8" fill="#e6e6e6" stroke="#111" stroke-width="1.8"/>`+
     `<text class="lr3-legend-text" x="110" y="331" font-size="12.5" fill="#000">исходные элементы</text>`+
-    `<rect x="320" y="319" width="16" height="16" fill="#111" stroke="#111" stroke-width="1.8"/>`+
+    `<rect x="320" y="319" width="16" height="16" fill="#e6e6e6" stroke="#111" stroke-width="1.8"/>`+
     `<text class="lr3-legend-text" x="345" y="331" font-size="12.5" fill="#000">искомый элемент</text>`+
   `</svg></div>`;
 }
