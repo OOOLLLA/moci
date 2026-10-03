@@ -907,7 +907,7 @@ function renderLR3(){
       <div class="section-title">2. Перевод в градусы и вычисление тригонометрических функций</div>
       ${lr3TrigTable(o)}
       <div class="section-title">3. Решение искомых элементов</div>
-      ${stepHtml(o.steps[0],1)}${stepHtml(o.steps[1],2)}${stepHtml(o.steps[2],3)}
+      ${stepHtml(o.steps[0],1,o)}${stepHtml(o.steps[1],2,o)}${stepHtml(o.steps[2],3,o)}
       ${lr3CheckHtml(o)}
       <div class="section-title">Итог</div>
       <table><tr><th>Элемент</th><th>В градусах</th><th>Градусы и минуты</th></tr>${final}</table>`;
