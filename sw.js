@@ -1,10 +1,11 @@
-const CACHE = 'mos-2026-10-03-neucha-handwritten-notebook-v2-greek-symbols';
+const CACHE = 'mos-2026-10-03-neucha-handwritten-notebook-v3-greek-symbols-local';
 const APP_SHELL = [
   './',
   './index.html',
   './manifest.webmanifest',
   './icon-192.png',
-  './icon-512.png'
+  './icon-512.png',
+  './math-standard.woff2'
 ];
 
 self.addEventListener('install', event => {

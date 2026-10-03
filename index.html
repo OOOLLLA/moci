@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- BUILD: 2026-10-03-lr2-lr4-greek-symbol-font-fix-v7 -->
+<!-- BUILD: 2026-10-03-lr2-lr4-greek-symbol-font-fix-v8 -->
 <html lang="ru">
 <head>
 <meta charset="utf-8">
@@ -16,6 +16,14 @@
 <link rel="apple-touch-icon" href="icon-192.png">
 
 <style>
+/* Локальный шрифт математических символов: одинаковое отображение на ПК и телефоне. */
+@font-face{
+  font-family:'MATH_STANDARD';
+  src:url('./math-standard.woff2') format('woff2');
+  font-style:normal;
+  font-weight:400;
+  font-display:block;
+}
 :root {
   --bg:#f2f2f2; --card:#fff; --ink:#222222; --muted:#666666; --line:#cccccc;
   --blue:#333333; --blue2:#eeeeee; --yellow:#f5f5f5; --green:#f0f0f0; --soft:#f5f5f5; --danger:#444444444;
@@ -144,16 +152,16 @@ th{background:var(--soft);font-weight:800}
   font-family:'Times New Roman', Times, serif !important;
   font-style:normal !important;
 }
-/* φ и λ — всегда стандартный математический шрифт, независимо от шрифта документа. */
+/* φ λ Φ Λ Δ — всегда стандартный математический шрифт, независимо от шрифта документа. */
 .math-greek{
-  font-family:'Times New Roman', Times, serif !important;
+  font-family:'MATH_STANDARD','Times New Roman',Times,serif !important;
   font-style:normal !important;
   font-weight:400 !important;
   letter-spacing:0 !important;
 }
 .lab.active svg .math-greek,
 .pdf-export svg .math-greek{
-  font-family:'Times New Roman', Times, serif !important;
+  font-family:'MATH_STANDARD','Times New Roman',Times,serif !important;
   font-style:normal !important;
   font-weight:400 !important;
 }
@@ -491,14 +499,14 @@ function line(t){ return `<div class="calc-line">${t}</div>`; }
 function card(title, body){ return `<div class="card"><h2>${title}</h2>${body}</div>`; }
 
 /*
- * Единое отображение греческих символов φ/λ во всех лабораторных.
+ * Единое отображение греческих символов φ, λ, Φ, Λ, Δ во всех лабораторных.
  * Основной текст документа остаётся рукописным, но сами математические
  * символы всегда набираются стандартным шрифтом. Для SVG используем tspan,
  * чтобы браузер не наследовал рукописный шрифт от внешнего текста.
  */
 function normalizeGreekSymbols(root){
   if(!root) return;
-  const greek=/[φϕΦλΛ]/g;
+  const greek=/[φϕΦλΛΔ]/g;
   const isSkip = el => el && el.closest && el.closest('script,style');
   const walker=document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
   const nodes=[];
@@ -1136,7 +1144,7 @@ function svgSphereScheme(o){
     }
     const dstr=pts.map((p,i)=>`${i?'L':'M'} ${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(' ');
     const am=a1+d/2, lx=center.x+(r+15)*Math.cos(am)+labelDx, ly=center.y+(r+15)*Math.sin(am)+labelDy;
-    return `<path d="${dstr}" fill="none" stroke="#111" stroke-width="1.45"/><text x="${lx.toFixed(1)}" y="${ly.toFixed(1)}" font-size="16" font-family="Times New Roman, serif" font-style="italic">${label}</text>`;
+    return `<path d="${dstr}" fill="none" stroke="#111" stroke-width="1.45"/><text x="${lx.toFixed(1)}" y="${ly.toFixed(1)}" font-size="16" font-family="Times New Roman, serif" font-style="normal">${label}</text>`;
   }
 
   const eps=0.6;
@@ -1187,7 +1195,7 @@ function svgSphereScheme(o){
       <line x1="${ar1.x.toFixed(1)}" y1="${ar1.y.toFixed(1)}" x2="${ar2.x.toFixed(1)}" y2="${ar2.y.toFixed(1)}" stroke="#111" stroke-width="2.15" marker-end="url(#arrSphere)"/>
 
       <path d="${dlPath}" fill="none" stroke="#111" stroke-width="1.7" marker-end="url(#arrSphere)"/>
-      <text x="${(dlMid.x-4).toFixed(1)}" y="${(dlMid.y+22).toFixed(1)}" font-size="16" font-family="Times New Roman, serif" font-style="italic">Δλ</text>
+      <text x="${(dlMid.x-4).toFixed(1)}" y="${(dlMid.y+22).toFixed(1)}" font-size="16" font-family="Times New Roman, serif" font-style="normal">Δλ</text>
 
       <circle cx="${pS.x.toFixed(1)}" cy="${pS.y.toFixed(1)}" r="3.0" fill="#111"/>
       <circle cx="${pE.x.toFixed(1)}" cy="${pE.y.toFixed(1)}" r="3.0" fill="#111"/>
@@ -1214,14 +1222,14 @@ function svgSphereScheme(o){
 
       <text x="${(pPN.x+10).toFixed(1)}" y="${(pPN.y-8).toFixed(1)}" font-size="18" font-family="Times New Roman, serif">P<tspan baseline-shift="sub" font-size="12">N</tspan></text>
       <text x="${(pPS.x+10).toFixed(1)}" y="${(pPS.y+18).toFixed(1)}" font-size="18" font-family="Times New Roman, serif">P<tspan baseline-shift="sub" font-size="12">S</tspan></text>
-      <text x="${(pS.x+(startSideLeft?-22:10)).toFixed(1)}" y="${(pS.y-10).toFixed(1)}" font-size="19" font-family="Times New Roman, serif" font-style="italic">${startName}</text>
-      <text x="${(pE.x+(east?12:-24)).toFixed(1)}" y="${(pE.y+18).toFixed(1)}" font-size="19" font-family="Times New Roman, serif" font-style="italic">${endName}</text>
-      <text x="${(pAP.x+(pAP.x<CX?-28:10)).toFixed(1)}" y="${(pAP.y+18).toFixed(1)}" font-size="18" font-family="Times New Roman, serif" font-style="italic">${primeName}</text>
-      <text x="${(midStart.x+(startSideLeft?-28:12)).toFixed(1)}" y="${(midStart.y+1).toFixed(1)}" font-size="17" font-family="Times New Roman, serif" font-style="italic">${phiStartLabel}</text>
-      <text x="${(midEnd.x+(east?12:-30)).toFixed(1)}" y="${(midEnd.y+6).toFixed(1)}" font-size="17" font-family="Times New Roman, serif" font-style="italic">${phiEndLabel}</text>
-      <text x="${leftEdge.x-18}" y="${leftEdge.y+6}" font-size="17" font-family="Times New Roman, serif" font-style="italic">e</text>
-      <text x="${rightEdge.x+8}" y="${rightEdge.y+6}" font-size="17" font-family="Times New Roman, serif" font-style="italic">q</text>
-      <text x="${(CX-20).toFixed(1)}" y="${(CY-R+28).toFixed(1)}" font-size="16" font-family="Times New Roman, serif" font-style="italic">Δλ</text>
+      <text x="${(pS.x+(startSideLeft?-22:10)).toFixed(1)}" y="${(pS.y-10).toFixed(1)}" font-size="19" font-family="Times New Roman, serif" font-style="normal">${startName}</text>
+      <text x="${(pE.x+(east?12:-24)).toFixed(1)}" y="${(pE.y+18).toFixed(1)}" font-size="19" font-family="Times New Roman, serif" font-style="normal">${endName}</text>
+      <text x="${(pAP.x+(pAP.x<CX?-28:10)).toFixed(1)}" y="${(pAP.y+18).toFixed(1)}" font-size="18" font-family="Times New Roman, serif" font-style="normal">${primeName}</text>
+      <text x="${(midStart.x+(startSideLeft?-28:12)).toFixed(1)}" y="${(midStart.y+1).toFixed(1)}" font-size="17" font-family="Times New Roman, serif" font-style="normal">${phiStartLabel}</text>
+      <text x="${(midEnd.x+(east?12:-30)).toFixed(1)}" y="${(midEnd.y+6).toFixed(1)}" font-size="17" font-family="Times New Roman, serif" font-style="normal">${phiEndLabel}</text>
+      <text x="${leftEdge.x-18}" y="${leftEdge.y+6}" font-size="17" font-family="Times New Roman, serif" font-style="normal">e</text>
+      <text x="${rightEdge.x+8}" y="${rightEdge.y+6}" font-size="17" font-family="Times New Roman, serif" font-style="normal">q</text>
+      <text x="${(CX-20).toFixed(1)}" y="${(CY-R+28).toFixed(1)}" font-size="16" font-family="Times New Roman, serif" font-style="normal">Δλ</text>
 
       <circle cx="18" cy="${(H-16).toFixed(1)}" r="3.2" fill="#666666"/>
       <text x="28" y="${(H-12).toFixed(1)}" font-size="12.5" fill="#555555" font-family="Arial, sans-serif">
@@ -1573,16 +1581,16 @@ function svgTopViewScheme(o){
 
     <!-- λA -->
     <path d="${lambdaAPath}" fill="none" stroke="#777777" stroke-width="2" marker-end="url(#lr4p1arrDark)"/>
-    <text class="p1txt p1label" x="${labA.x.toFixed(1)}" y="${labA.y.toFixed(1)}" text-anchor="middle" font-size="18" font-style="italic">λA</text>
+    <text class="p1txt p1label" x="${labA.x.toFixed(1)}" y="${labA.y.toFixed(1)}" text-anchor="middle" font-size="18" font-style="normal">λA</text>
 
     <!-- λB -->
     <path d="${lambdaBPath}" fill="none" stroke="#555" stroke-width="2" marker-end="url(#lr4p1arrDark)"/>
-    <text class="p1txt p1label" x="${labB.x.toFixed(1)}" y="${labB.y.toFixed(1)}" text-anchor="middle" font-size="18" font-style="italic">λB</text>
+    <text class="p1txt p1label" x="${labB.x.toFixed(1)}" y="${labB.y.toFixed(1)}" text-anchor="middle" font-size="18" font-style="normal">λB</text>
 
     <!-- Кратчайшая дуга Δλ -->
     <path d="${deltaPath}" fill="none" stroke="#333333" stroke-width="3"
           marker-end="url(#lr4p1arrBlue)"/>
-    <text class="p1txt p1label" x="${labD.x.toFixed(1)}" y="${labD.y.toFixed(1)}" text-anchor="middle" font-size="20" font-style="italic">Δλ</text>
+    <text class="p1txt p1label" x="${labD.x.toFixed(1)}" y="${labD.y.toFixed(1)}" text-anchor="middle" font-size="20" font-style="normal">Δλ</text>
 
     <!-- Центр / северный полюс -->
     <circle cx="${CX}" cy="${CY}" r="36" fill="none" stroke="#777" stroke-width="1.2"/>
@@ -1675,7 +1683,7 @@ function svgGammaScaleScheme(o){
       return `
         <line x1="${scaleX-16}" y1="${yy.toFixed(1)}" x2="${scaleX+16}" y2="${yy.toFixed(1)}"
               stroke="#111" stroke-width="${strong?2:1.4}"/>
-        <text x="${scaleX+28}" y="${(yy+5).toFixed(1)}" font-family="Times New Roman,serif"
+        <text x="${scaleX+28}" y="${(yy+5).toFixed(1)}" font-family="Times New Roman, serif"
               font-size="${strong?15:14}" ${strong?'font-weight="700"':''}>${tickLabel(v)}</text>`;
     }).join('')}
 
@@ -1696,14 +1704,14 @@ function svgGammaScaleScheme(o){
           stroke="#777" stroke-width="1" stroke-dasharray="4 4"/>
 
     <text x="${leftX-18}" y="${(labelYA+5).toFixed(1)}" text-anchor="end"
-          font-family="Times New Roman,serif" font-size="16" font-style="italic">${labelA}</text>
+          font-family="Times New Roman, serif" font-size="16" font-style="normal">${labelA}</text>
     <text x="${leftX-18}" y="${(labelYB+5).toFixed(1)}" text-anchor="end"
-          font-family="Times New Roman,serif" font-size="16" font-style="italic">${labelB}</text>
+          font-family="Times New Roman, serif" font-size="16" font-style="normal">${labelB}</text>
 
     <text x="${leftX-28}" y="${((yA+yB)/2-7).toFixed(1)}" text-anchor="end"
-          font-family="Times New Roman,serif" font-size="17" font-style="italic">Δφ</text>
+          font-family="Times New Roman, serif" font-size="17" font-style="normal">Δφ</text>
     <text x="${leftX-28}" y="${((yA+yB)/2+13).toFixed(1)}" text-anchor="end"
-          font-family="Times New Roman,serif" font-size="14">≈ ${dm(Math.abs(o.dphi),1)} ${dphiName}</text>
+          font-family="Times New Roman, serif" font-size="14">≈ ${dm(Math.abs(o.dphi),1)} ${dphiName}</text>
 
     <!-- Правая линия и указатель средней широты -->
     <line x1="${rightX}" y1="${Math.min(yA,yB).toFixed(1)}"
@@ -1715,9 +1723,9 @@ function svgGammaScaleScheme(o){
     <polygon points="${rightX},${yAvg.toFixed(1)} ${rightX+28},${(yAvg-7).toFixed(1)} ${rightX+28},${(yAvg+7).toFixed(1)}"
              fill="#111"/>
     <text x="${rightX+38}" y="${(yAvg-5).toFixed(1)}"
-          font-family="Times New Roman,serif" font-size="17" font-style="italic">φ<tspan baseline-shift="sub" font-size="12">ср</tspan></text>
+          font-family="Times New Roman, serif" font-size="17" font-style="normal">φ<tspan baseline-shift="sub" font-size="12">ср</tspan></text>
     <text x="${rightX+38}" y="${(yAvg+15).toFixed(1)}"
-          font-family="Times New Roman,serif" font-size="14">≈ ${dmHem(o.pavg,1)}</text>
+          font-family="Times New Roman, serif" font-size="14">≈ ${dmHem(o.pavg,1)}</text>
 
     <text x="20" y="${H-18}" font-family="Arial,sans-serif" font-size="12.5" fill="#555555">
       Автомасштаб: φср = ${dmHem(o.pavg,1)}, |Δφ| = ${dm(Math.abs(o.dphi),1)}, шаг шкалы = ${step}°
